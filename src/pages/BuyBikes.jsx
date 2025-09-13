@@ -172,7 +172,7 @@ export default function BuyBikes() {
                   {bike.booked && <div className="absolute top-4 left-4 bg-red-600 text-white px-4 py-1 rounded font-semibold z-10">
                     Booked
                   </div>}
-                  <img src={bike.image} alt={bike.model} className="w-full h-64 object-cover rounded mb-2"/>
+<img src={`${API_URL}${bike.image}`} alt={bike.model} className="w-full h-64 object-cover rounded mb-2"/>
                   <h3 className="text-lg font-semibold">{bike.year} | {bike.model} | {bike.specs}</h3>
                   <p className="text-gray-500">{bike.mileage} Km • {bike.owner}</p>
                   <p className="text-2xl font-bold text-cyan-600">₹{bike.price.toLocaleString()}</p>
