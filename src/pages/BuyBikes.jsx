@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export default function BuyBikes() {
   const [allBikes, setAllBikes] = useState([]);
@@ -41,15 +41,23 @@ export default function BuyBikes() {
   //     .catch((err) => console.error("Failed to fetch bikes:", err));
   // }, []);
 
-  useEffect(() => {
+useEffect(() => {
   axios
     .get(`${API_URL}/api/bikes/`)
     .then((res) => {
-      setAllBikes(res.data);
-      setFilteredBikes(res.data);
+      const bikesWithFullImages = res.data.map(bike => ({
+        ...bike,
+        image: bike.image
+          ? bike.image.startsWith("http")
+            ? bike.image                    // full URL
+            : `${API_URL}/media/${bike.image}` // prepend backend URL
+          : "https://placehold.co/600x400/003366/ffffff?text=No+Image"
+      }));
+      setAllBikes(bikesWithFullImages);
+      setFilteredBikes(bikesWithFullImages);
     })
     .catch((err) => console.error("Failed to fetch bikes:", err));
-}, [API_URL]);
+}, []);
 
   // Apply filters and sorting
   useEffect(() => {
@@ -167,13 +175,15 @@ export default function BuyBikes() {
             <p className="text-center col-span-full">No bikes found.</p>
           ) : (
             filteredBikes.map(bike => (
+              
               <Link key={bike.id} to={`/buy/${bike.id}`}>
                 <div className="bike-card flex flex-col items-center p-4 bg-[#c2ecef] rounded-xl shadow-md relative">
                   {bike.booked && <div className="absolute top-4 left-4 bg-red-600 text-white px-4 py-1 rounded font-semibold z-10">
                     Booked
                   </div>}
-<img src={`${API_URL}${bike.image}`} alt={bike.model} className="w-full h-64 object-cover rounded mb-2"/>
-                  <h3 className="text-lg font-semibold">{bike.year} | {bike.model} | {bike.specs}</h3>
+<img
+  src={bike.image}
+  alt={bike.model} className="w-full h-64 object-cover rounded mb-2"/>                <h3 className="text-lg font-semibold">{bike.year} | {bike.model} | {bike.specs}</h3>
                   <p className="text-gray-500">{bike.mileage} Km • {bike.owner}</p>
                   <p className="text-2xl font-bold text-cyan-600">₹{bike.price.toLocaleString()}</p>
                   <p className="text-gray-500">{bike.location}</p>
