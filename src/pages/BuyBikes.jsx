@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
 
 export default function BuyBikes() {
   const [allBikes, setAllBikes] = useState([]);
@@ -30,15 +31,25 @@ export default function BuyBikes() {
   };
 
   // Fetch bikes from backend
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:8000/api/bikes/")
+  //     .then((res) => {
+  //       setAllBikes(res.data);
+  //       setFilteredBikes(res.data);
+  //     })
+  //     .catch((err) => console.error("Failed to fetch bikes:", err));
+  // }, []);
+
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/bikes/")
-      .then((res) => {
-        setAllBikes(res.data);
-        setFilteredBikes(res.data);
-      })
-      .catch((err) => console.error("Failed to fetch bikes:", err));
-  }, []);
+  axios
+    .get(`${API_URL}/api/bikes/`)
+    .then((res) => {
+      setAllBikes(res.data);
+      setFilteredBikes(res.data);
+    })
+    .catch((err) => console.error("Failed to fetch bikes:", err));
+}, [API_URL]);
 
   // Apply filters and sorting
   useEffect(() => {
